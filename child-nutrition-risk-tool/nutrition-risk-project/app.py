@@ -82,14 +82,9 @@ st.markdown("""
         margin-top: 2px;
     }
 
-    .section-card {
-        background-color: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-left: 5px solid #B31217;
-        border-radius: 8px;
-        padding: 20px 24px;
-        margin-bottom: 18px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    [data-testid="stVerticalBlockBorderWrapper"] > div:first-child {
+        border-left: 5px solid #B31217 !important;
+        border-radius: 8px !important;
     }
 
     .section-heading {
@@ -116,16 +111,6 @@ st.markdown("""
     .risk-normal   { background-color: #138808; }
     .risk-mam      { background-color: #E24B4A; }
     .risk-sam      { background-color: #8C0E12; }
-
-    .action-box {
-        background-color: #FAFAFA;
-        border: 1px solid #E5E7EB;
-        border-left: 4px solid #B31217;
-        border-radius: 8px;
-        padding: 14px 18px;
-        font-size: 14px;
-        color: #1A1A1A;
-    }
 
     .footer-note {
         font-size: 12px;
@@ -198,32 +183,29 @@ DISTRICTS = [
 # ----------------------------------------------------------------------------
 # Input form -- deliberately minimal, field-worker friendly
 # ----------------------------------------------------------------------------
-st.markdown('<div class="section-card">', unsafe_allow_html=True)
 st.markdown('<p class="section-heading">Child &amp; Household Details</p>', unsafe_allow_html=True)
+with st.container(border=True):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        age_months = st.slider("Age (months)", 6, 59, 24)
+        gender = st.radio("Gender", ["Male", "Female"], horizontal=True)
+        district = st.selectbox("District", DISTRICTS)
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    age_months = st.slider("Age (months)", 6, 59, 24)
-    gender = st.radio("Gender", ["Male", "Female"], horizontal=True)
-    district = st.selectbox("District", DISTRICTS)
+    with col2:
+        weight_kg = st.number_input("Weight (kg)", min_value=3.0, max_value=25.0, value=11.0, step=0.1)
+        height_cm = st.number_input("Height / Length (cm)", min_value=55.0, max_value=120.0, value=80.0, step=0.5)
+        muac_cm = st.number_input("MUAC -- Mid-Upper Arm Circumference (cm)", min_value=8.0, max_value=17.0, value=13.5, step=0.1)
 
-with col2:
-    weight_kg = st.number_input("Weight (kg)", min_value=3.0, max_value=25.0, value=11.0, step=0.1)
-    height_cm = st.number_input("Height / Length (cm)", min_value=55.0, max_value=120.0, value=80.0, step=0.5)
-    muac_cm = st.number_input("MUAC -- Mid-Upper Arm Circumference (cm)", min_value=8.0, max_value=17.0, value=13.5, step=0.1)
+    with col3:
+        income_bracket = st.selectbox("Household Income Bracket", ["Low", "Lower-Middle", "Middle"])
+        sanitation_access = st.selectbox("Sanitation Access", ["No", "Partial", "Yes"])
+        mother_literacy = st.selectbox("Mother's Literacy Level", ["Illiterate", "Primary", "Secondary+"])
 
-with col3:
-    income_bracket = st.selectbox("Household Income Bracket", ["Low", "Lower-Middle", "Middle"])
-    sanitation_access = st.selectbox("Sanitation Access", ["No", "Partial", "Yes"])
-    mother_literacy = st.selectbox("Mother's Literacy Level", ["Illiterate", "Primary", "Secondary+"])
-
-col4, col5 = st.columns(2)
-with col4:
-    dietary_diversity_score = st.slider("Dietary Diversity Score (food groups consumed, 0-9)", 0, 9, 4)
-with col5:
-    immunization_status = st.selectbox("Immunization Status", ["Incomplete", "Complete"])
-
-st.markdown('</div>', unsafe_allow_html=True)
+    col4, col5 = st.columns(2)
+    with col4:
+        dietary_diversity_score = st.slider("Dietary Diversity Score (food groups consumed, 0-9)", 0, 9, 4)
+    with col5:
+        immunization_status = st.selectbox("Immunization Status", ["Incomplete", "Complete"])
 
 run = st.button("Run Screening Assessment")
 
@@ -278,60 +260,55 @@ if run:
     top_idx = np.argsort(-np.abs(class_shap))[:3]
     top_features = [(X_input.columns[i], class_shap[i]) for i in top_idx]
 
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.markdown('<p class="section-heading">Screening Result</p>', unsafe_allow_html=True)
+    with st.container(border=True):
+        badge_class = {"Normal": "risk-normal", "MAM": "risk-mam", "SAM": "risk-sam"}[pred_label]
+        badge_text = {
+            "Normal": "NORMAL -- No Immediate Risk Indicated",
+            "MAM": "MODERATE ACUTE MALNUTRITION (MAM) -- Monitoring Advised",
+            "SAM": "SEVERE ACUTE MALNUTRITION (SAM) -- Urgent Referral Advised",
+        }[pred_label]
+        st.markdown(f'<div class="risk-badge {badge_class}">{badge_text}</div>', unsafe_allow_html=True)
 
-    badge_class = {"Normal": "risk-normal", "MAM": "risk-mam", "SAM": "risk-sam"}[pred_label]
-    badge_text = {
-        "Normal": "NORMAL -- No Immediate Risk Indicated",
-        "MAM": "MODERATE ACUTE MALNUTRITION (MAM) -- Monitoring Advised",
-        "SAM": "SEVERE ACUTE MALNUTRITION (SAM) -- Urgent Referral Advised",
-    }[pred_label]
-    st.markdown(f'<div class="risk-badge {badge_class}">{badge_text}</div>', unsafe_allow_html=True)
+        proba_df = pd.DataFrame({
+            "Category": label_encoder.classes_,
+            "Confidence": pred_proba,
+        }).sort_values("Confidence", ascending=False)
+        st.bar_chart(proba_df.set_index("Category"))
 
-    proba_df = pd.DataFrame({
-        "Category": label_encoder.classes_,
-        "Confidence": pred_proba,
-    }).sort_values("Confidence", ascending=False)
-    st.bar_chart(proba_df.set_index("Category"))
+        st.markdown("**Key contributing factors (SHAP-based explanation):**")
+        factor_labels = {
+            "muac_cm": "MUAC measurement",
+            "weight_for_age_z": "Weight-for-age (Z-score)",
+            "height_for_age_z": "Height-for-age (Z-score)",
+            "dietary_diversity_score": "Dietary diversity",
+            "weight_kg": "Weight",
+            "height_cm": "Height",
+            "age_months": "Age",
+        }
+        action_map = {
+            "muac_cm": "Recommend repeat MUAC measurement and PHC referral if confirmed.",
+            "weight_for_age_z": "Advise increased caloric and protein intake; schedule follow-up weigh-in.",
+            "height_for_age_z": "Flag for chronic growth monitoring over subsequent visits.",
+            "dietary_diversity_score": "Counsel household on food group diversity (proteins, fruits, vegetables).",
+            "weight_kg": "Track weight trend over next 3 monthly visits.",
+            "height_cm": "Track height/length trend over next 3 monthly visits.",
+            "age_months": "No direct action -- contextual factor only.",
+        }
 
-    st.markdown("**Key contributing factors (SHAP-based explanation):**")
-    factor_labels = {
-        "muac_cm": "MUAC measurement",
-        "weight_for_age_z": "Weight-for-age (Z-score)",
-        "height_for_age_z": "Height-for-age (Z-score)",
-        "dietary_diversity_score": "Dietary diversity",
-        "weight_kg": "Weight",
-        "height_cm": "Height",
-        "age_months": "Age",
-    }
-    action_map = {
-        "muac_cm": "Recommend repeat MUAC measurement and PHC referral if confirmed.",
-        "weight_for_age_z": "Advise increased caloric and protein intake; schedule follow-up weigh-in.",
-        "height_for_age_z": "Flag for chronic growth monitoring over subsequent visits.",
-        "dietary_diversity_score": "Counsel household on food group diversity (proteins, fruits, vegetables).",
-        "weight_kg": "Track weight trend over next 3 monthly visits.",
-        "height_cm": "Track height/length trend over next 3 monthly visits.",
-        "age_months": "No direct action -- contextual factor only.",
-    }
+        for feat, val in top_features:
+            direction = "increased" if val > 0 else "decreased"
+            label = factor_labels.get(feat, feat)
+            st.markdown(f"- **{label}** {direction} the predicted risk level.")
 
-    for feat, val in top_features:
-        direction = "increased" if val > 0 else "decreased"
-        label = factor_labels.get(feat, feat)
-        st.markdown(f"- **{label}** {direction} the predicted risk level.")
-
-    st.markdown('<div class="action-box">', unsafe_allow_html=True)
-    st.markdown("**Suggested Action(s):**")
-    for feat, _ in top_features:
-        if feat in action_map:
-            st.markdown(f"- {action_map[feat]}")
-    st.markdown(
-        "- This is a **screening aid only**. Final clinical decisions must "
-        "be made by a qualified health worker."
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("**Suggested Action(s):**")
+        for feat, _ in top_features:
+            if feat in action_map:
+                st.markdown(f"- {action_map[feat]}")
+        st.markdown(
+            "- This is a **screening aid only**. Final clinical decisions must "
+            "be made by a qualified health worker."
+        )
 
 st.markdown("""
 <div class="footer-note">
