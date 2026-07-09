@@ -11,6 +11,7 @@
 # ============================================================================
 
 import json
+import os
 
 import joblib
 import numpy as np
@@ -18,6 +19,12 @@ import pandas as pd
 import shap
 import streamlit as st
 import xgboost as xgb
+
+# Resolve paths relative to this script's own location, not the process's
+# working directory (Streamlit Cloud's cwd is the repo root, not the app's
+# folder, which breaks bare relative paths like "models/xgb_model.json").
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 # ----------------------------------------------------------------------------
 # Page config
@@ -168,12 +175,12 @@ st.write("")
 @st.cache_resource
 def load_artifacts():
     model = xgb.XGBClassifier()
-    model.load_model("models/xgb_model.json")
+    model.load_model(os.path.join(MODELS_DIR, "xgb_model.json"))
 
-    ohe = joblib.load("models/onehot_encoder.pkl")
-    label_encoder = joblib.load("models/label_encoder.pkl")
+    ohe = joblib.load(os.path.join(MODELS_DIR, "onehot_encoder.pkl"))
+    label_encoder = joblib.load(os.path.join(MODELS_DIR, "label_encoder.pkl"))
 
-    with open("models/feature_columns.json") as f:
+    with open(os.path.join(MODELS_DIR, "feature_columns.json")) as f:
         feature_columns = json.load(f)
 
     explainer = shap.TreeExplainer(model)
