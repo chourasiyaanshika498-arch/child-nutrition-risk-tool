@@ -36,7 +36,11 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------------------------------
-# Government-portal styling
+# Clean government-portal styling (white background, red accent, card layout)
+# NOTE: India's State Emblem (Ashoka Lion Capital) is a protected symbol under
+# the State Emblem of India (Prohibition of Improper Use) Act, 2005, and is
+# NOT reproduced here. The circular badge below is an original tricolour
+# motif, not the official emblem.
 # ----------------------------------------------------------------------------
 st.markdown("""
 <style>
@@ -44,39 +48,27 @@ st.markdown("""
 
     html, body, [class*="css"]  {
         font-family: 'Inter', sans-serif;
+        background-color: #FFFFFF;
     }
 
     .gov-header {
         background: linear-gradient(90deg, #FF9933 0%, #FF9933 33%, #FFFFFF 33%, #FFFFFF 34%, #FFFFFF 66%, #138808 66%, #138808 100%);
-        height: 6px;
+        height: 5px;
         width: 100%;
         margin-bottom: 0px;
     }
 
     .gov-banner {
-        background-color: #0B2545;
-        padding: 18px 30px;
+        background-color: #FFFFFF;
+        padding: 20px 30px;
         display: flex;
         align-items: center;
         gap: 18px;
-        border-bottom: 3px solid #FF9933;
-    }
-
-    .gov-seal {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, #1B3B6F, #0B2545);
-        border: 2px solid #FFD700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 26px;
-        flex-shrink: 0;
+        border-bottom: 3px solid #B31217;
     }
 
     .gov-title {
-        color: #FFFFFF;
+        color: #1A1A1A;
         font-family: 'Merriweather', serif;
         font-size: 22px;
         font-weight: 700;
@@ -85,35 +77,35 @@ st.markdown("""
     }
 
     .gov-subtitle {
-        color: #D9E2EC;
+        color: #5A5A5A;
         font-size: 13px;
         margin-top: 2px;
     }
 
     .section-card {
         background-color: #FFFFFF;
-        border: 1px solid #DCE3EA;
-        border-left: 5px solid #0B2545;
-        border-radius: 6px;
+        border: 1px solid #E5E7EB;
+        border-left: 5px solid #B31217;
+        border-radius: 8px;
         padding: 20px 24px;
         margin-bottom: 18px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.07);
     }
 
     .section-heading {
         font-family: 'Merriweather', serif;
         font-size: 16px;
-        color: #0B2545;
+        color: #1A1A1A;
         font-weight: 700;
         margin-bottom: 12px;
-        border-bottom: 2px solid #FF9933;
+        border-bottom: 2px solid #B31217;
         display: inline-block;
         padding-bottom: 4px;
     }
 
     .risk-badge {
         padding: 14px 20px;
-        border-radius: 6px;
+        border-radius: 8px;
         font-weight: 700;
         font-size: 18px;
         text-align: center;
@@ -122,16 +114,17 @@ st.markdown("""
     }
 
     .risk-normal   { background-color: #138808; }
-    .risk-mam      { background-color: #E5A500; }
-    .risk-sam      { background-color: #C0392B; }
+    .risk-mam      { background-color: #E24B4A; }
+    .risk-sam      { background-color: #8C0E12; }
 
     .action-box {
-        background-color: #F4F8FB;
-        border: 1px dashed #0B2545;
-        border-radius: 6px;
+        background-color: #FAFAFA;
+        border: 1px solid #E5E7EB;
+        border-left: 4px solid #B31217;
+        border-radius: 8px;
         padding: 14px 18px;
         font-size: 14px;
-        color: #0B2545;
+        color: #1A1A1A;
     }
 
     .footer-note {
@@ -144,7 +137,7 @@ st.markdown("""
     }
 
     div.stButton > button {
-        background-color: #0B2545;
+        background-color: #B31217;
         color: white;
         font-weight: 600;
         border-radius: 6px;
@@ -152,14 +145,13 @@ st.markdown("""
         border: none;
     }
     div.stButton > button:hover {
-        background-color: #FF9933;
-        color: #0B2545;
+        background-color: #8C0E12;
+        color: white;
     }
 </style>
 
 <div class="gov-header"></div>
 <div class="gov-banner">
-    <div class="gov-seal">🛡️</div>
     <div>
         <p class="gov-title">Child Nutrition Risk Screening &amp; Intervention Support Portal</p>
         <p class="gov-subtitle">Field Screening Tool for Anganwadi &amp; ASHA Workers &nbsp;|&nbsp; ICDS-Aligned Prototype</p>
