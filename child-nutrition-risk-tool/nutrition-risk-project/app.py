@@ -82,11 +82,6 @@ st.markdown("""
         margin-top: 2px;
     }
 
-    [data-testid="stVerticalBlockBorderWrapper"] > div:first-child {
-        border-left: 5px solid #B31217 !important;
-        border-radius: 8px !important;
-    }
-
     .section-heading {
         font-family: 'Merriweather', serif;
         font-size: 16px;
