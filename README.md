@@ -1,3 +1,4 @@
+🔗 **Live App:** [child-nutrition-risk-tool.streamlit.app](https://child-nutrition-risk-tool-4aeecvemxslzpex4vn2tsb.streamlit.app)
 # Child Nutrition Risk Screening & Intervention Support Tool
 
 A field-screening prototype that flags children (6-59 months) who may need closer nutritional monitoring, aligned to **WHO MUAC standards** and **ICDS (Integrated Child Development Services)** risk categories — built for Anganwadi/ASHA-style field use, using explainable machine learning (XGBoost + SHAP).
